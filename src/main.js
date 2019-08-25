@@ -8,6 +8,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 // index.js index.vue index.json 优先级和书写顺序一致，默认三种文件
 import router from '@/router'
 
+// 配置axios为Vue成员
+import axios from 'axios'
+Vue.prototype.$http = axios
+
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false

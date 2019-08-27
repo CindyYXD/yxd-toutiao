@@ -49,15 +49,15 @@
         <span @click="toggleAside()" class="icon el-icon-s-fold"></span>
         <span class="text">江苏传智播客科技教育有限公司</span>
         <!-- 下拉菜单组件 -->
-        <el-dropdown class="my-dropdown">
+        <el-dropdown class="my-dropdown" @command="clickItem">
           <span class="el-dropdown-link">
-            <img src="../../assets/imgages/avatar.jpg" class="avatar" alt />
-            <span class="name">用户名称</span>
+            <img :src="photo" class="avatar" alt />
+            <span class="name">{{ name }}</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-setting">个人设置</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-unlock">退出登录</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-setting" command="setting">个人设置</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-unlock" command="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
@@ -69,13 +69,31 @@
 </template>
 
 <script>
+import store from '@/store'
 export default {
   data () {
     return {
-      isCollapse: false
+      isCollapse: false,
+      name: '',
+      photo: ''
     }
   },
+  created () {
+    const user = store.getUser()
+    this.name = user.name
+    this.photo = user.photo
+  },
   methods: {
+    setting () {
+      this.$router.push('/setting')
+    },
+    logout () {
+      store.delUser()
+      this.$router.push('/login')
+    },
+    clickItem (command) {
+      this[command]()
+    },
     toggleAside () {
       //   展开 切换
       this.isCollapse = !this.isCollapse

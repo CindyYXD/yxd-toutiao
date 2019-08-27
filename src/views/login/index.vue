@@ -19,7 +19,7 @@
           <el-checkbox :value="true">我已阅读并同意用户协议和隐私条款</el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-button @click="login" type="primary" style="width:360px;">登录</el-button>
+          <el-button @click="login()" type="primary" style="width:360px;">登录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import store from '@/store'
 export default {
   data () {
     // 定义一个校验函数
@@ -56,19 +57,31 @@ export default {
   methods: {
     login () {
       // 调用 validate 对整体表进行校验
-      this.$refs.loginForm.validate((valid) => {
+      this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
-          // 校验成功  调用登录接口
-          this.$http.post('http://ttapi.research.itcast.cn/mp/v1_0/authorizations', this.loginform)
-            .then((res) => {
-              // 成功 跳转
-              // 注意 登录 不够完善
-              this.$router.push('/')
-            })
-            .catch((e) => {
-              // 失败 提示
-              this.$message.error('手机号或验证码错误')
-            })
+          // // 校验成功  调用登录接口
+          // this.$http.post('http://ttapi.research.itcast.cn/mp/v1_0/authorizations', this.loginform)
+          //   .then((res) => {
+          //     // 成功 跳转
+          //     // 注意 登录 不够完善
+          //     // res是响应对象--->res.data响应主体---->res.data.data响应主体包含（message,data）
+          //     store.setUser(res.data.data)
+          //     this.$router.push('/')
+          //   })
+          //   .catch((e) => {
+          //     // 失败 提示
+          //     this.$message.error('手机号或验证码错误')
+          //   })
+
+          // 获取登录成功后的用户信息  res = {data:{data:'', message:''}}
+          try {
+            const { data: { data } } = await this.$http.post('authorizations', this.loginform)
+            store.setUser(data)
+            this.$router.push('/')
+          } catch (e) {
+            // 进行错误提示
+            this.$message.error('手机号或验证码错误')
+          }
         }
       })
     }
